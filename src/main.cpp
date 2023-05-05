@@ -19,6 +19,11 @@
 // Sumanta Guha.
 /////////////////////////////////////////////////////////////////////////////////// 
 
+//TODO: space ship and dual viewports
+//TODO: Proportional Physics
+//TODO: lighting and tetxture
+//TODO: refinment and final touches
+
 #define _USE_MATH_DEFINES 
 
 #include <cstdlib>
