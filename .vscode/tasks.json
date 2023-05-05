@@ -1,0 +1,30 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "OpenGL: build project",
+            "command": "g++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-I${workspaceFolder}\\include",
+                "-L${workspaceFolder}\\lib",
+                "-lopengl32",
+                "-lglu32",
+                "-lfreeglut",
+                "-lglew32",
+                "-o",
+                "${workspaceFolder}\\bin\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        }
+    ],
+    "version": "2.0.0"
+}
