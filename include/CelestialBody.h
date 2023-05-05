@@ -4,7 +4,9 @@
 
 class CelestialBody: public Drawable {
 protected:
-    const float radius, orbitRadius, spinVelocity, orbitVelocity;
-    float axisAngle, orbitAngle;
+    float radius, spinVelocity;
+    float spinAngle;
     float color[3], lightAmbient[3], lightDiffuse[3], lightPosition[3];
+
+    //TODO: add texture
 };
