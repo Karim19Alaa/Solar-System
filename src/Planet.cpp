@@ -1,6 +1,5 @@
 
-#include <GL/glew.h>
-#include <GL/freeglut.h>
+
 #include <Planet.h>
 
 Planet::Planet(float radius, float orbitRadius, float spinVelocity,
@@ -23,11 +22,12 @@ Planet::Planet(float radius, float orbitRadius, float spinVelocity,
 void Planet::draw(){
     glPushMatrix();
         glRotatef(orbitAngle, 0, 0, 1);
-        glTranslatef(0, 0, orbitRadius);
+        glTranslatef(0, orbitRadius, 0);
         glRotatef(spinAngle, 0, 0, 1);
+        glColor3f(color[0], color[1], color[2]);
         //TODO: light
-        glutWireSphere(radius, 10, 10);
-        glPopMatrix();
+        glutWireSphere(radius, 20, 20);
+    glPopMatrix();
 }
 
 void Planet::update(){

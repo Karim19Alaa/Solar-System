@@ -7,7 +7,17 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
+                // "-I${fileDirname}",
+                // "${fileDirname}${pathSeparator}**.cpp",
                 "${file}",
+                "StaticCamera.cpp",
+                "Renderer.cpp",
+                "Planet.cpp",
+                "Star.cpp",
+                // "$(find", "${fileDirname}", "-type", "f", "-iregex", "'.*\\.cpp')",
+                // "-I${workspaceFolder}\\src",
+                // "${workspaceFolder}\\src\\*.cpp",
+
                 "-I${workspaceFolder}\\include",
                 "-L${workspaceFolder}\\lib",
                 "-lopengl32",

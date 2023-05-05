@@ -15,14 +15,24 @@ void Renderer::render(){
     this->director->pointCamera();
 
     for(auto& d: this->object){
-        d.draw();
+        d->draw();
     }
 }
 
-void Renderer::addObject(Drawable &drawable){
+void Renderer::tick(){
+
+    for(auto& d: this->object){
+        d->update();
+    }
+}
+
+void Renderer::addObject(Drawable *drawable){
     object.push_back(drawable);
 }
 
-void Renderer::addObjects(std::vector<Drawable> &drawables){
+void Renderer::addObjects(std::vector<Drawable *> &drawables){
     object.insert(object.end(), drawables.begin(), drawables.end());
 }
+
+    
+Renderer::~Renderer(){}

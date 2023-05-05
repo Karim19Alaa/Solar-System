@@ -1,13 +1,10 @@
 
-#include <GL/glew.h>
-#include <GL/freeglut.h>
-
 #include <Star.h>
 
-Star::Star(float radius, float spinVelocity, float axisAngle, float color[3]){
+Star::Star(float radius, float spinVelocity, float spinAngle, float color[3]){
     this->radius = radius;
     this->spinVelocity = spinVelocity;
-    this->spinAngle = axisAngle;
+    this->spinAngle = spinAngle;
     this->color[0] = color[0];
     this->color[1] = color[1];
     this->color[2] = color[2];
@@ -18,9 +15,10 @@ Star::Star(float radius, float spinVelocity, float axisAngle, float color[3]){
 void Star::draw(){
     glPushMatrix();
         glRotatef(spinAngle, 0, 0, 1);
+        glColor3f(color[0], color[1], color[2]);
         //TODO: light emiission
-        glutWireSphere(radius, 10, 10);
-        glPopMatrix();
+        glutWireSphere(radius, 20, 20);
+    glPopMatrix();
 }
 
 void Star::update(){
