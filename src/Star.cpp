@@ -14,9 +14,9 @@ Star::Star(float radius, float spinVelocity, float spinAngle, float color[3]){
 
 void Star::draw(){
     glPushMatrix();
-        glRotatef(spinAngle, 0, 0, 1);
+        glRotatef(spinAngle, 0, 1, 0);
         glColor3f(color[0], color[1], color[2]);
-        //TODO: light emiission
+        glRotatef(90, 1, 0, 0);
         glutWireSphere(radius, 20, 20);
     glPopMatrix();
 }

@@ -22,8 +22,8 @@ void CompositePlanet::draw(){
     Planet::draw();
 
     glPushMatrix();
-        glRotatef(orbitAngle, 0, 0, 1);
-        glTranslatef(0, orbitRadius, 0);
+        glRotatef(orbitAngle, 0, 1, 0);
+        glTranslatef(orbitRadius, 0, 0);
         for(auto& d: this->surroundings){
             d->draw();
         }

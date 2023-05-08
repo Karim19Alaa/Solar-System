@@ -19,7 +19,7 @@
 // Sumanta Guha.
 /////////////////////////////////////////////////////////////////////////////////// 
 
-//TODO: space ship and dual viewports
+//DOne: space ship and dual viewports
 //TODO: Proportional Physics
 //TODO: lighting and tetxture
 //TODO: refinment and final touches
@@ -41,6 +41,7 @@
 #include <World.h>
 #include <ViewPort.h>
 #include <CompositePlanet.h>
+#include <SpaceShip.h>
 
 #define ROWS 8  // Number of rows of asteroids.
 #define COLUMNS 6 // Number of columns of asteroids.
@@ -151,14 +152,19 @@ CompositePlanet five(10.0f, 40.0f, 1.0f, -3.0f, -8.0f, 0.0f, ctwo);
 float ye[3] = {1, 1, 0};
 Star sun(20.0f, 1.0f, 0.0f, ye);
 
+SpaceShip ss(-100, 100, 0);
+
+Renderer *fixedR;
+ViewPort *fixedV;
+
 // Initialization routine.
 void setup(void)
 {
-	double eye[3] = {0, 0, 50}, center[3]= {0, 0, 0}, up[3] = {0, 1, 0};
+	double eye[3] = {0, 100, 0}, center[3]= {0, 0, 0}, up[3] = {0, 0, -1};
 
 
 	fixedCamera = new StaticCamera (eye, center, up);
-	viewport = new ViewPort(0, 0, 800, 800, *fixedCamera);
+	viewport = new ViewPort(0, 0, 800, 800, ss);
 	world = new World();
 	
 	five.addSurrounding(&two);
@@ -169,8 +175,16 @@ void setup(void)
 	world->addObject(&four);
 	world->addObject(&five);
 	world->addObject(&sun);
+	world->addObject(&ss);
 
 	renderer = new Renderer(world, viewport);
+
+
+	fixedV = new ViewPort(400, 0, 400, 400, *fixedCamera);
+
+	fixedR = new Renderer(world, fixedV);
+
+
 	// int i, j;
 
 	// spacecraft = glGenLists(1);
@@ -243,6 +257,7 @@ void drawScene(void)
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    renderer->render();
+   fixedR->render();
 
 //    // Beg	in left viewport.
 //    glViewport(0, 0, width / 2.0, height);//demo
@@ -317,8 +332,8 @@ void resize(int w, int h)
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	// glFrustum(-10.0, 50.0, -10.0, 50.0, 5.0, 250.0);
-	glOrtho(-100, 100, -100, 100, -50, 50);
+	glFrustum(-5.0, 5.0, -5.0, 5.0, 5.0, 250.0);
+	// glOrtho(-100, 100, -100, 100, -100, 100);
 	glMatrixMode(GL_MODELVIEW);
 
 	// Pass the size of the OpenGL window.
@@ -345,17 +360,19 @@ void specialKeyInput(int key, int x, int y)
 	float tempxVal = xVal, tempzVal = zVal, tempAngle = angle;
 
 	// Compute next position.
-	if (key == GLUT_KEY_LEFT) tempAngle = angle + 5.0;
-	if (key == GLUT_KEY_RIGHT) tempAngle = angle - 5.0;
+	if (key == GLUT_KEY_LEFT) /*tempAngle = angle + 5.0;*/ ss.steerLeft();
+	if (key == GLUT_KEY_RIGHT) /*tempAngle = angle - 5.0;*/ ss.steerRight();
 	if (key == GLUT_KEY_UP)
 	{
-		tempxVal = xVal - sin(angle * M_PI / 180.0);
-		tempzVal = zVal - cos(angle * M_PI / 180.0);
+		// tempxVal = xVal - sin(angle * M_PI / 180.0);
+		// tempzVal = zVal - cos(angle * M_PI / 180.0);
+		ss.throttle();
 	}
 	if (key == GLUT_KEY_DOWN)
 	{
-		tempxVal = xVal + sin(angle * M_PI / 180.0);
-		tempzVal = zVal + cos(angle * M_PI / 180.0);
+		// tempxVal = xVal + sin(angle * M_PI / 180.0);
+		// tempzVal = zVal + cos(angle * M_PI / 180.0);
+		ss.reverse();
 	}
 
 	// Angle correction.
