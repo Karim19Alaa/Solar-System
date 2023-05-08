@@ -1,38 +1,16 @@
 #include <Renderer.h>
 
-Renderer::Renderer(float xvmin, float yvmin, float width, float height, Director &director): object(){
-    this->xvmin = xvmin;
-    this->yvmin = yvmin;
-    this->width = width;
-    this->height = height;
-    this->director = &director;
+Renderer::Renderer(World *w, ViewPort *v)
+{
+    world = w;
+    viewPort = v;
 }
 
 void Renderer::render(){
-
-    glViewport(this->xvmin, this->yvmin, this->width, this->height);
-
-    this->director->pointCamera();
-
-    for(auto& d: this->object){
-        d->draw();
-    }
-}
-
-void Renderer::tick(){
-
-    for(auto& d: this->object){
-        d->update();
-    }
-}
-
-void Renderer::addObject(Drawable *drawable){
-    object.push_back(drawable);
-}
-
-void Renderer::addObjects(std::vector<Drawable *> &drawables){
-    object.insert(object.end(), drawables.begin(), drawables.end());
-}
-
     
+
+    this->viewPort->view();
+    this->world->draw();
+}
+
 Renderer::~Renderer(){}

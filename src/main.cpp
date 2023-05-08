@@ -38,6 +38,9 @@
 #include <Star.h>
 #include <Director.h>
 #include <StaticCamera.h>
+#include <World.h>
+#include <ViewPort.h>
+#include <CompositePlanet.h>
 
 #define ROWS 8  // Number of rows of asteroids.
 #define COLUMNS 6 // Number of columns of asteroids.
@@ -54,7 +57,9 @@ static unsigned int spacecraft; // Display lists base index.
 static int frameCount = 0; // Number of frames
 
 static Director *fixedCamera;
+static World *world;
 static Renderer *renderer;
+static ViewPort *viewport;
 
 // Routine to draw a bitmap character string.
 void writeBitmapString(void *font, char *string)
@@ -128,17 +133,20 @@ void frameCounter(int value)
    if (value != 0) // No output the first time frameCounter() is called (from main()).
 	  std::cout << "FPS = " << frameCount << std::endl;
    frameCount = 0;
-   renderer->tick();
+   world->tick();
    glutPostRedisplay();
    glutTimerFunc(60, frameCounter, 1);
 }
 
 float cone[3] = {1, 0, 1};
-Planet one(5.0f, 50.0f, 5.0f, 6.0f, -10.0f, 0.0f, cone);
+Planet one(5.0f, 25.0f, 5.0f, 25.0f, 10.0f, 0.0f, cone);
 Planet two(3.0f, 10.0f, 5.0f, -9.0f, 5.0f, 0.0f, cone);
 Planet three(7.0f, 15.0f, 5.0f, 10.0f, -7.0f, 0.0f, cone);
 Planet four(8.0f, 30.0f, 5.0f, 1.0f, 3.0f, 0.0f, cone);
-Planet five(10.0f, 40.0f, 5.0f, -15.0f, -8.0f, 0.0f, cone);
+
+float ctwo[3] = {0, 1, 0};
+CompositePlanet five(10.0f, 40.0f, 5.0f, -5.0f, -8.0f, 0.0f, ctwo);
+
 
 float ye[3] = {1, 1, 0};
 Star sun(20.0f, 5.0f, 0.0f, ye);
@@ -150,13 +158,19 @@ void setup(void)
 
 
 	fixedCamera = new StaticCamera (eye, center, up);
-	renderer = new Renderer(0, 0, 800, 400, *fixedCamera);
-	renderer->addObject(&one);
-	renderer->addObject(&two);
-	renderer->addObject(&three);
-	renderer->addObject(&four);
-	renderer->addObject(&five);
-	renderer->addObject(&sun);
+	viewport = new ViewPort(0, 0, 800, 400, *fixedCamera);
+	world = new World();
+	
+	five.addSurrounding(&two);
+	five.addSurrounding(&one);
+	// world->addObject(&one);
+	// world->addObject(&two);
+	world->addObject(&three);
+	world->addObject(&four);
+	world->addObject(&five);
+	world->addObject(&sun);
+
+	renderer = new Renderer(world, viewport);
 	// int i, j;
 
 	// spacecraft = glGenLists(1);

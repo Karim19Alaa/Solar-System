@@ -1,23 +1,20 @@
 #pragma once
 
-#include <vector>
-#include <Drawable.h>
-#include <Director.h>
-
-class Renderer{
+#include <World.h>
+#include <ViewPort.h>
+class Renderer
+{
 private:
-    std::vector<Drawable *> object;
-    float xvmin, yvmin, width, height;
-    Director *director;
+    /* data */
+    ViewPort *viewPort;
+    World *world;
 
 public:
-    Renderer(float xvmin, float yvmin, float width, float height, Director &director);
+    Renderer(World *w, ViewPort *v);
 
     void render();
-    void tick();
-
-    void addObject(Drawable *);
-    void addObjects(std::vector<Drawable *> &);
 
     ~Renderer();
 };
+
+
