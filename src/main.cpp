@@ -135,21 +135,21 @@ void frameCounter(int value)
    frameCount = 0;
    world->tick();
    glutPostRedisplay();
-   glutTimerFunc(60, frameCounter, 1);
+   glutTimerFunc(17, frameCounter, 1);
 }
 
 float cone[3] = {1, 0, 1};
-Planet one(5.0f, 25.0f, 5.0f, 25.0f, 10.0f, 0.0f, cone);
-Planet two(3.0f, 10.0f, 5.0f, -9.0f, 5.0f, 0.0f, cone);
-Planet three(7.0f, 15.0f, 5.0f, 10.0f, -7.0f, 0.0f, cone);
-Planet four(8.0f, 30.0f, 5.0f, 1.0f, 3.0f, 0.0f, cone);
+Planet one(5.0f, 25.0f, 1.0f, 6.0f, 10.0f, 0.0f, cone);
+Planet two(3.0f, 10.0f, 1.0f, -2.0f, 5.0f, 0.0f, cone);
+Planet three(7.0f, 45.0f, 1.0f, 3.0f, -7.0f, 0.0f, cone);
+Planet four(8.0f, 30.0f, 1.0f, 4.0f, 3.0f, 0.0f, cone);
 
 float ctwo[3] = {0, 1, 0};
-CompositePlanet five(10.0f, 40.0f, 5.0f, -5.0f, -8.0f, 0.0f, ctwo);
+CompositePlanet five(10.0f, 40.0f, 1.0f, -3.0f, -8.0f, 0.0f, ctwo);
 
 
 float ye[3] = {1, 1, 0};
-Star sun(20.0f, 5.0f, 0.0f, ye);
+Star sun(20.0f, 1.0f, 0.0f, ye);
 
 // Initialization routine.
 void setup(void)
@@ -158,7 +158,7 @@ void setup(void)
 
 
 	fixedCamera = new StaticCamera (eye, center, up);
-	viewport = new ViewPort(0, 0, 800, 400, *fixedCamera);
+	viewport = new ViewPort(0, 0, 800, 800, *fixedCamera);
 	world = new World();
 	
 	five.addSurrounding(&two);
@@ -393,7 +393,7 @@ int main(int argc, char **argv)
 	glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(800, 400);
+	glutInitWindowSize(800, 800);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("spaceTravel.cpp");
 	glutDisplayFunc(drawScene);
