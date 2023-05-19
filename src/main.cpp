@@ -150,19 +150,22 @@ CompositePlanet five(10.0f, 40.0f, 1.0f, -3.0f, -8.0f, 0.0f, ctwo);
 
 
 float ye[3] = {1, 1, 0};
-Star sun(20.0f, 1.0f, 0.0f, ye);
+Star sun(GL_LIGHT0, 20.0f, 1.0f, 0.0f, ye);
 
 SpaceShip ss(-100, 100, 0);
 
 Renderer *fixedR;
 ViewPort *fixedV;
 
+float globAmb[] = { 0.2, 0.2, 0.2, 1.0 };
+
+
 // Initialization routine.
 void setup(void)
 {
 	double eye[3] = {0, 100, 0}, center[3]= {0, 0, 0}, up[3] = {0, 0, -1};
 
-
+	glEnable(GL_DEPTH_TEST);
 	fixedCamera = new StaticCamera (eye, center, up);
 	viewport = new ViewPort(0, 0, 800, 800, ss);
 	world = new World();
@@ -183,6 +186,10 @@ void setup(void)
 	fixedV = new ViewPort(400, 0, 400, 400, *fixedCamera);
 
 	fixedR = new Renderer(world, fixedV);
+	glEnable(GL_LIGHTING);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globAmb);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 
 	// int i, j;

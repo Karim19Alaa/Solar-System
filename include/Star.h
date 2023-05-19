@@ -3,8 +3,10 @@
 #include <CelestialBody.h>
 
 class Star: public CelestialBody{
+    private:
+    GLenum lightID;
     public:
-        Star(float radius, float spinVelocity, float axisAngle, float color[3]);
+        Star(GLenum lightID, float radius, float spinVelocity, float axisAngle, float color[3]);
         void draw() override;
         void update() override;
 };

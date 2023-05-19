@@ -8,11 +8,13 @@ SpaceShip::SpaceShip(float x, float z, float angle){
 SpaceShip::~SpaceShip(){}
 
 void SpaceShip::draw(){
-    glColor3f(0, 1, 1);
+    float color[] = {0, 1, 1, 1};
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color);
     glPushMatrix();
+
         glTranslatef(x, 0, z);
         glRotatef(angle, 0, 1, 0);
-        glutWireTeapot(10);
+        glutSolidTeapot(10);
     glPopMatrix();
 }
 
@@ -22,6 +24,7 @@ void SpaceShip::update(){
 
 void SpaceShip::pointCamera(){
 	glLoadIdentity();
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
     gluLookAt(x + 13 * cos(angle * M_PI / 180.0), 0, z - 13 * sin(angle * M_PI / 180.0),
                 x + 14 * cos(angle * M_PI / 180.0), 0, z - 14 * sin(angle * M_PI / 180.0),
                 0, 1, 0);

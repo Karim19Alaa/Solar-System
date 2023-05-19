@@ -7,10 +7,10 @@ Renderer::Renderer(World *w, ViewPort *v)
 }
 
 void Renderer::render(){
-    
-
     this->viewPort->view();
     this->world->draw();
+
+
 }
 
 Renderer::~Renderer(){}
