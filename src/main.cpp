@@ -169,6 +169,7 @@ void setup(void)
 	fixedCamera = new StaticCamera (eye, center, up);
 	viewport = new ViewPort(0, 0, 800, 800, ss);
 	world = new World();
+	world->addObject(&sun);
 	
 	five.addSurrounding(&two);
 	five.addSurrounding(&one);
@@ -177,7 +178,6 @@ void setup(void)
 	world->addObject(&three);
 	world->addObject(&four);
 	world->addObject(&five);
-	world->addObject(&sun);
 	world->addObject(&ss);
 
 	renderer = new Renderer(world, viewport);

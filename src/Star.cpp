@@ -53,22 +53,27 @@ void Star::draw(){
     float w[] = {0.1, 0.1, 0.1, 1};
 
     glLightfv(lightID, GL_SPECULAR, w);
+    glLightfv(lightID, GL_POSITION, lightPosition);
 
 
 
-    glLightf(lightID, GL_LINEAR_ATTENUATION, 0.0001f);
-    glLightf(lightID, GL_QUADRATIC_ATTENUATION, 0.0001f);
+    // glLightf(lightID, GL_LINEAR_ATTENUATION, 0.0001f);
+    // glLightf(lightID, GL_QUADRATIC_ATTENUATION, 0.0001f);
     
-    glPushMatrix();
-        glLoadIdentity();
-        glLightfv(lightID, GL_POSITION, lightPosition);
-    glPopMatrix();
+    // glPushMatrix();
+        // glLoadIdentity();
+        // glLightfv(lightID, GL_POSITION, lightPosition);
+        // float red[] = {1, 0, 0, 0};
+        // glMaterialfv(GL_FRONT, GL_AMBIENT, red);
+        // glutSolidCone(10, 20, 20, 20);
+    // glPopMatrix();
 
     glMaterialfv(GL_FRONT, GL_EMISSION, lightAmbient);
 
     glPushMatrix();
         glRotatef(spinAngle, 0, 1, 0);
         glRotatef(90, 1, 0, 0);
+
         glutSolidSphere(radius, 20, 20);
     glPopMatrix();
 
