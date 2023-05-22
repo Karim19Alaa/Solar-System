@@ -17,6 +17,7 @@
                 "ViewPort.cpp",
                 "CompositePlanet.cpp",
                 "SpaceShip.cpp",
+                "SpaceFactory.cpp",
                 // "$(find", "${fileDirname}", "-type", "f", "-iregex", "'.*\\.cpp')",
                 // "-I${workspaceFolder}\\src",
                 // "${workspaceFolder}\\src\\*.cpp",

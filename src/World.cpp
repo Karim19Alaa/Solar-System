@@ -25,4 +25,8 @@ void World::addObjects(std::vector<Drawable *> &drawables){
 }
 
     
-World::~World(){}
+World::~World(){
+    for(auto& d: this->object){
+        delete  d;
+    }
+}

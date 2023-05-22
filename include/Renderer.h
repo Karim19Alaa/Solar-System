@@ -5,7 +5,6 @@
 class Renderer
 {
 private:
-    /* data */
     ViewPort *viewPort;
     World *world;
 

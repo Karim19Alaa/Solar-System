@@ -181,6 +181,14 @@ int main(int argc, char **argv)
 	setup();
 
 	glutMainLoop();
-	spaceshipRenderer->~Renderer();
-	fixedCamera->~Director();
+
+	delete world;
+	delete spaceshipRenderer;
+	delete fixedCamera;
+	delete fixedRenderer;
+	delete fixedViewPort;
+	delete spaceshipViewPort;
+	delete spaceship;
+
+	return 0;
 }

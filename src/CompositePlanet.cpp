@@ -39,4 +39,8 @@ void CompositePlanet::update(){
     }
 }
 
-CompositePlanet::~CompositePlanet(){}
+CompositePlanet::~CompositePlanet(){
+   for(auto& d: this->surroundings){
+        delete  d;
+    }
+}

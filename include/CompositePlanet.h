@@ -6,7 +6,6 @@
 class CompositePlanet: public Planet
 {
 private:
-    /* data */
     std::vector<Drawable *> surroundings;
 public:
     CompositePlanet(float radius, float orbitRadius, float spinVelocity,

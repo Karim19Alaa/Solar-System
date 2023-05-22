@@ -11,7 +11,6 @@ void SpaceShip::draw(){
     float color[] = {0, 1, 1, 1};
     glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color);
     glPushMatrix();
-
         glTranslatef(x, 0, z);
         glRotatef(angle, 0, 1, 0);
         glutSolidTeapot(6);
@@ -19,7 +18,7 @@ void SpaceShip::draw(){
 }
 
 void SpaceShip::update(){
-    //TODO
+    //pass
 }
 
 void SpaceShip::pointCamera(){
