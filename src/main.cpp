@@ -1,4 +1,4 @@
-//TODO: refinment and final touches
+
 
 #define _USE_MATH_DEFINES 
 
@@ -22,14 +22,16 @@
 // Globals.
 static int width, height; // Size of the OpenGL window.
 
-static Director *fixedCamera;
 static World *world;
-static Renderer *spacecraftRenderer;
-static ViewPort *spacecraftViewPort;
 
-SpaceShip ss(-100, 100, 45);
-Renderer *fixedR;
-ViewPort *fixedV;
+static SpaceShip *spaceship;
+static Renderer *spaceshipRenderer;
+static ViewPort *spaceshipViewPort;
+
+static Director *fixedCamera;
+static Renderer *fixedRenderer;
+static ViewPort *fixedViewPort;
+
 SpaceFactory factory;
 
 float globAmb[] = { 0.25, 0.25, 0.25, 1.0 };
@@ -50,12 +52,8 @@ void setup(void)
 {
 	glEnable(GL_DEPTH_TEST);
 
-	double eye[3] = {0, 100, 0}, center[3]= {0, 0, 0}, up[3] = {0, 0, -1};
-	fixedCamera = new StaticCamera (eye, center, up);
-
-	spacecraftViewPort = new ViewPort(0, 0, width, height, ss);
+	// Create the world
 	world = new World();
-
 
 	world->addObject(factory.create(SUN));
 
@@ -72,16 +70,21 @@ void setup(void)
 	float cosmicColor[3] = {0.09, 0.08, 0.43};
 	world->addObject(new Planet(400, 0, 0, 0, 0, 0, cosmicColor));
 
-
 	//add spaceship
-	world->addObject(&ss);
+	spaceship = new SpaceShip(-100, 100, 45);
+	world->addObject(spaceship);
 
-	spacecraftRenderer = new Renderer(world, spacecraftViewPort);
+	// Create the spaceship viewport and renderer
+	spaceshipViewPort = new ViewPort(0, 0, width, height, *spaceship);
+	spaceshipRenderer = new Renderer(world, spaceshipViewPort);
+
+	// Create the fixed viewport and renderer
+	double eye[3] = {0, 100, 0}, center[3]= {0, 0, 0}, up[3] = {0, 0, -1};
+	fixedCamera = new StaticCamera (eye, center, up);
+	fixedViewPort = new ViewPort(width * 2 / 3, 0, width / 3, height / 3, *fixedCamera);
+	fixedRenderer = new Renderer(world, fixedViewPort);
 
 
-	fixedV = new ViewPort(width * 2 / 3, 0, width / 3, height / 3, *fixedCamera);
-
-	fixedR = new Renderer(world, fixedV);
 	glEnable(GL_LIGHTING);
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globAmb);
 
@@ -98,8 +101,8 @@ void drawScene(void)
 
    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	spacecraftRenderer->render();
-	fixedR->render();
+	spaceshipRenderer->render();
+	fixedRenderer->render();
 
   	glutSwapBuffers();
 }
@@ -107,8 +110,8 @@ void drawScene(void)
 // OpenGL window reshape routine.
 void resize(int w, int h)
 {
-	spacecraftViewPort->update(0, 0, w, h);
-	fixedV->update(2*w / 3, 0, w / 3, h / 3);
+	spaceshipViewPort->update(0, 0, w, h);
+	fixedViewPort->update(2*w / 3, 0, w / 3, h / 3);
 
 	// Pass the size of the OpenGL window.
 	width = w;
@@ -133,15 +136,15 @@ void specialKeyInput(int key, int x, int y)
 {
 
 	// Compute next position.
-	if (key == GLUT_KEY_LEFT) 	ss.steerLeft();
-	if (key == GLUT_KEY_RIGHT)	ss.steerRight();
+	if (key == GLUT_KEY_LEFT) 	spaceship->steerLeft();
+	if (key == GLUT_KEY_RIGHT)	spaceship->steerRight();
 	if (key == GLUT_KEY_UP)
 	{
-		ss.throttle();
+		spaceship->throttle();
 	}
 	if (key == GLUT_KEY_DOWN)
 	{
-		ss.reverse();
+		spaceship->reverse();
 	}
 	glutPostRedisplay();
 }
@@ -178,6 +181,6 @@ int main(int argc, char **argv)
 	setup();
 
 	glutMainLoop();
-	spacecraftRenderer->~Renderer();
+	spaceshipRenderer->~Renderer();
 	fixedCamera->~Director();
 }
