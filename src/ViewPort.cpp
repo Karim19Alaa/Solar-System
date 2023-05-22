@@ -12,6 +12,13 @@ ViewPort::ViewPort(float xvmin, float yvmin, float width, float height, Director
 void ViewPort::view(){
     glViewport(xvmin, yvmin, width, height);
     director->pointCamera();
+    
+}
+void ViewPort::update(int xmin, int ymin, int w, int h){
+    this->xvmin = xmin;
+    this->yvmin = ymin;
+    this->width = w;
+    this->height = h;
 }
 
 ViewPort::~ViewPort(){}

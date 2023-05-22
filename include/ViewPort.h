@@ -12,5 +12,6 @@ private:
 public:
     ViewPort(float xvmin, float yvmin, float width, float height, Director &director);
     void view();
+    void update(int xmin, int ymin, int w, int h);
     ~ViewPort();
 };

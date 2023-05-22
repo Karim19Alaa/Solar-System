@@ -42,6 +42,7 @@
 #include <ViewPort.h>
 #include <CompositePlanet.h>
 #include <SpaceShip.h>
+#include <SpaceFactory.h>
 
 #define ROWS 8  // Number of rows of asteroids.
 #define COLUMNS 6 // Number of columns of asteroids.
@@ -156,8 +157,9 @@ SpaceShip ss(-100, 100, 0);
 
 Renderer *fixedR;
 ViewPort *fixedV;
+SpaceFactory factory;
 
-float globAmb[] = { 0.2, 0.2, 0.2, 1.0 };
+float globAmb[] = { 0.5, 0.5, 0.5, 1.0 };
 
 
 // Initialization routine.
@@ -167,23 +169,35 @@ void setup(void)
 
 	glEnable(GL_DEPTH_TEST);
 	fixedCamera = new StaticCamera (eye, center, up);
-	viewport = new ViewPort(0, 0, 800, 800, ss);
+	viewport = new ViewPort(0, 0, width, height, ss);
 	world = new World();
-	world->addObject(&sun);
 	
-	five.addSurrounding(&two);
-	five.addSurrounding(&one);
-	// world->addObject(&one);
-	// world->addObject(&two);
-	world->addObject(&three);
-	world->addObject(&four);
-	world->addObject(&five);
+	world->addObject(factory.create(SUN));
+	world->addObject(factory.create(MERCURY));
+	world->addObject(factory.create(VENUS));
+	world->addObject(factory.create(EARTH));
+	world->addObject(factory.create(JUPYTER));
+	world->addObject(factory.create(SATURNE));
+	world->addObject(factory.create(URANUS));
+	world->addObject(factory.create(NEPTUNE));
+
+
+	
+	
+	// five.addSurrounding(&two);
+	// five.addSurrounding(&one);
+	// // world->addObject(&one);
+	// // world->addObject(&two);
+	// world->addObject(&three);
+	// world->addObject(&four);
+	// world->addObject(&five);
+
 	world->addObject(&ss);
 
 	renderer = new Renderer(world, viewport);
 
 
-	fixedV = new ViewPort(400, 0, 400, 400, *fixedCamera);
+	fixedV = new ViewPort(width * 2 / 3, 0, width / 3, height / 3, *fixedCamera);
 
 	fixedR = new Renderer(world, fixedV);
 	glEnable(GL_LIGHTING);
@@ -336,12 +350,14 @@ void drawScene(void)
 // OpenGL window reshape routine.
 void resize(int w, int h)
 {
-	glViewport(0, 0, w, h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glFrustum(-5.0, 5.0, -5.0, 5.0, 5.0, 250.0);
-	// glOrtho(-100, 100, -100, 100, -100, 100);
-	glMatrixMode(GL_MODELVIEW);
+	// glViewport(0, 0, w, h);
+	// glMatrixMode(GL_PROJECTION);
+	// glLoadIdentity();
+	// glFrustum(-20.0, 20.0, -20.0, 20.0, 5.0, 1250.0);
+	// // glOrtho(-100, 100, -100, 100, -100, 100);
+	// glMatrixMode(GL_MODELVIEW);
+	viewport->update(0, 0, w, h);
+	fixedV->update(2*w / 3, 0, w / 3, h / 3);
 
 	// Pass the size of the OpenGL window.
 	width = w;
