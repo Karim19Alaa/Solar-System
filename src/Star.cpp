@@ -2,7 +2,7 @@
 #include <Star.h>
 #include<iostream>
 
-Star::Star(GLenum lightID, float radius, float spinVelocity, float spinAngle, float color[3]){
+Star::Star(GLenum lightID, float radius, float spinVelocity, float axisAngle, float color[3]){
     this->lightID = lightID;
     this->radius = radius;
     this->spinVelocity = spinVelocity;
@@ -15,9 +15,8 @@ Star::Star(GLenum lightID, float radius, float spinVelocity, float spinAngle, fl
 
 
 }
-
-
-void Star::draw(){
+void Star::draw()
+{
     glEnable(lightID);
 
     glLightfv(lightID, GL_AMBIENT_AND_DIFFUSE, light_Ambient_Diffuse);
@@ -45,7 +44,6 @@ void Star::draw(){
 
     float reset[4] = {0};
     glMaterialfv(GL_FRONT, GL_EMISSION, reset);
-
 }
 
 void Star::update(){

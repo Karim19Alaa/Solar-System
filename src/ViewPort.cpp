@@ -15,7 +15,7 @@ void ViewPort::view(){
     director->pointCamera();
     
 }
-void ViewPort::update(int xmin, int ymin, int w, int h){
+void ViewPort::update(float xmin, float ymin, float w, float h){
     this->xvmin = xmin;
     this->yvmin = ymin;
     this->width = w;
