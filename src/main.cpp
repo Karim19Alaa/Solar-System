@@ -1,27 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////////        
-// spaceTravel.cpp
-//
-// This program draws a conical spacecraft that can travel and an array of 
-// fixed spherical asteroids. The view in the left viewport is from a fixed
-// camera; the view in the right viewport is from the spacecraft.
-// There is approximate collision detection.
-// 
-// User-defined constants: 
-// ROW is the number of rows of  asteroids.
-// COLUMN is the number of columns of asteroids.
-// FILL_PROBABILITY is the percentage probability that a particular row-column slot
-// will be filled with an asteroid.
-//
-// Interaction:
-// Press the left/right arrow keys to turn the craft.
-// Press the up/down arrow keys to move the craft.
-//
-// Sumanta Guha.
-/////////////////////////////////////////////////////////////////////////////////// 
-
-//DOne: space ship and dual viewports
-//TODO: Proportional Physics
-//TODO: lighting and tetxture
 //TODO: refinment and final touches
 
 #define _USE_MATH_DEFINES 
@@ -34,167 +10,73 @@
 #include <GL/freeglut.h> 
 
 #include <Renderer.h>
-#include <Planet.h>
 #include <Star.h>
 #include <Director.h>
 #include <StaticCamera.h>
 #include <World.h>
 #include <ViewPort.h>
-#include <CompositePlanet.h>
 #include <SpaceShip.h>
 #include <SpaceFactory.h>
 
-#define ROWS 8  // Number of rows of asteroids.
-#define COLUMNS 6 // Number of columns of asteroids.
-#define FILL_PROBABILITY 100 // Percentage probability that a particular row-column slot will be 
-                             // filled with an asteroid. It should be an integer between 0 and 100.
 
 // Globals.
-static long font = (long)GLUT_BITMAP_8_BY_13; // Font selection.
 static int width, height; // Size of the OpenGL window.
-static float angle = 0.0; // Angle of the spacecraft.
-static float xVal = 0, zVal = 0; // Co-ordinates of the spacecraft.
-static int isCollision = 0; // Is there collision between the spacecraft and an asteroid?
-static unsigned int spacecraft; // Display lists base index.
-static int frameCount = 0; // Number of frames
 
 static Director *fixedCamera;
 static World *world;
-static Renderer *renderer;
-static ViewPort *viewport;
+static Renderer *spacecraftRenderer;
+static ViewPort *spacecraftViewPort;
 
-// Routine to draw a bitmap character string.
-void writeBitmapString(void *font, char *string)
-{
-	char *c;
-
-	for (c = string; *c != '\0'; c++) glutBitmapCharacter(font, *c);
-}
-
-// Asteroid class.
-class Asteroid
-{
-public:
-	Asteroid();
-	Asteroid(float x, float y, float z, float r, unsigned char colorR,
-		unsigned char colorG, unsigned char colorB);
-	float getCenterX() { return centerX; }
-	float getCenterY() { return centerY; }
-	float getCenterZ() { return centerZ; }
-	float getRadius() { return radius; }
-	void draw();
-
-private:
-	float centerX, centerY, centerZ, radius;
-	unsigned char color[3];
-};
-
-// Asteroid default constructor.
-Asteroid::Asteroid()
-{
-	centerX = 0.0;
-	centerY = 0.0;
-	centerZ = 0.0;
-	radius = 0.0; // Indicates no asteroid exists in the position.
-	color[0] = 0;
-	color[1] = 0;
-	color[2] = 0;
-}
-
-// Asteroid constructor.
-Asteroid::Asteroid(float x, float y, float z, float r, unsigned char colorR,
-	unsigned char colorG, unsigned char colorB)
-{
-	centerX = x;
-	centerY = y;
-	centerZ = z;
-	radius = r;
-	color[0] = colorR;
-	color[1] = colorG;
-	color[2] = colorB;
-}
-
-// Function to draw asteroid.
-void Asteroid::draw()
-{
-	if (radius > 0.0) // If asteroid exists.
-	{
-		glPushMatrix();
-		glTranslatef(centerX, centerY, centerZ);
-		glColor3ubv(color);
-		glutWireSphere(radius, (int)radius * 6, (int)radius * 6);
-		glPopMatrix();
-	}
-}
-
-Asteroid arrayAsteroids[ROWS][COLUMNS]; // Global array of asteroids.
-
-// Routine to count the number of frames drawn every second.
-void frameCounter(int value)
-{
-   if (value != 0) // No output the first time frameCounter() is called (from main()).
-	  std::cout << "FPS = " << frameCount << std::endl;
-   frameCount = 0;
-   world->tick();
-   glutPostRedisplay();
-   glutTimerFunc(17, frameCounter, 1);
-}
-
-float cone[3] = {1, 0, 1};
-Planet one(5.0f, 25.0f, 1.0f, 6.0f, 10.0f, 0.0f, cone);
-Planet two(3.0f, 10.0f, 1.0f, -2.0f, 5.0f, 0.0f, cone);
-Planet three(7.0f, 45.0f, 1.0f, 3.0f, -7.0f, 0.0f, cone);
-Planet four(8.0f, 30.0f, 1.0f, 4.0f, 3.0f, 0.0f, cone);
-
-float ctwo[3] = {0, 1, 0};
-CompositePlanet five(10.0f, 40.0f, 1.0f, -3.0f, -8.0f, 0.0f, ctwo);
-
-
-float ye[3] = {1, 1, 0};
-Star sun(GL_LIGHT0, 20.0f, 1.0f, 0.0f, ye);
-
-SpaceShip ss(-100, 100, 0);
-
+SpaceShip ss(-100, 100, 45);
 Renderer *fixedR;
 ViewPort *fixedV;
 SpaceFactory factory;
 
-float globAmb[] = { 0.5, 0.5, 0.5, 1.0 };
+float globAmb[] = { 0.25, 0.25, 0.25, 1.0 };
+
+
+// Routine to count the number of frames drawn every second.
+void update(int value)
+{
+   world->tick();
+   glutPostRedisplay();
+   glutTimerFunc(17, update, 1);
+}
+
 
 
 // Initialization routine.
 void setup(void)
 {
-	double eye[3] = {0, 100, 0}, center[3]= {0, 0, 0}, up[3] = {0, 0, -1};
-
 	glEnable(GL_DEPTH_TEST);
+
+	double eye[3] = {0, 100, 0}, center[3]= {0, 0, 0}, up[3] = {0, 0, -1};
 	fixedCamera = new StaticCamera (eye, center, up);
-	viewport = new ViewPort(0, 0, width, height, ss);
+
+	spacecraftViewPort = new ViewPort(0, 0, width, height, ss);
 	world = new World();
-	
+
+
 	world->addObject(factory.create(SUN));
+
 	world->addObject(factory.create(MERCURY));
 	world->addObject(factory.create(VENUS));
 	world->addObject(factory.create(EARTH));
+	world->addObject(factory.create(MARS));
 	world->addObject(factory.create(JUPYTER));
 	world->addObject(factory.create(SATURNE));
 	world->addObject(factory.create(URANUS));
 	world->addObject(factory.create(NEPTUNE));
 
+	//backgorund
+	float cosmicColor[3] = {0.09, 0.08, 0.43};
+	world->addObject(new Planet(400, 0, 0, 0, 0, 0, cosmicColor));
 
-	
-	
-	// five.addSurrounding(&two);
-	// five.addSurrounding(&one);
-	// // world->addObject(&one);
-	// // world->addObject(&two);
-	// world->addObject(&three);
-	// world->addObject(&four);
-	// world->addObject(&five);
 
+	//add spaceship
 	world->addObject(&ss);
 
-	renderer = new Renderer(world, viewport);
+	spacecraftRenderer = new Renderer(world, spacecraftViewPort);
 
 
 	fixedV = new ViewPort(width * 2 / 3, 0, width / 3, height / 3, *fixedCamera);
@@ -202,161 +84,30 @@ void setup(void)
 	fixedR = new Renderer(world, fixedV);
 	glEnable(GL_LIGHTING);
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globAmb);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
 
-
-	// int i, j;
-
-	// spacecraft = glGenLists(1);
-	// glNewList(spacecraft, GL_COMPILE);
-	// glPushMatrix();
-	// glRotatef(180.0, 0.0, 1.0, 0.0); // To make the spacecraft point down the $z$-axis initially.
-	// glColor3f(1.0, 1.0, 1.0);
-	// glutWireCone(5.0, 10.0, 10, 10);
-	// glPopMatrix();
-	// glEndList();
-
-	// // Initialize global arrayAsteroids.
-	// for (j = 0; j<COLUMNS; j++)
-	// 	for (i = 0; i<ROWS; i++)
-	// 		if (rand() % 100 < FILL_PROBABILITY)
-	// 			// If rand()%100 >= FILL_PROBABILITY the default constructor asteroid remains in the slot 
-	// 			// which indicates that there is no asteroid there because the default's radius is 0.
-	// 		{
-	// 			// Position the asteroids depending on if there is an even or odd number of columns
-	// 			// so that the spacecraft faces the middle of the asteroid field.
-	// 			if (COLUMNS % 2) // Odd number of columns.
-	// 				arrayAsteroids[i][j] = Asteroid(30.0*(-COLUMNS / 2 + j), 0.0, -40.0 - 30.0*i, 3.0,
-	// 					rand() % 256, rand() % 256, rand() % 256);
-	// 			else // Even number of columns.
-	// 				arrayAsteroids[i][j] = Asteroid(15 + 30.0*(-COLUMNS / 2 + j), 0.0, -40.0 - 30.0*i, 3.0,
-	// 					rand() % 256, rand() % 256, rand() % 256);
-	// 		}
 
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
-	glutTimerFunc(0, frameCounter, 0); // Initial call of frameCounter().
-}
-
-// Function to check if two spheres centered at (x1,y1,z1) and (x2,y2,z2) with
-// radius r1 and r2 intersect.
-int checkSpheresIntersection(float x1, float y1, float z1, float r1,
-	float x2, float y2, float z2, float r2)
-{
-	return ((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2) + (z1 - z2)*(z1 - z2) <= (r1 + r2)*(r1 + r2));
-}
-
-// Function to check if the spacecraft collides with an asteroid when the center of the base
-// of the craft is at (x, 0, z) and it is aligned at an angle a to to the -z direction.
-// Collision detection is approximate as instead of the spacecraft we use a bounding sphere.
-int asteroidCraftCollision(float x, float z, float a)
-{
-	int i, j;
-
-	// Check for collision with each asteroid.
-	for (j = 0; j<COLUMNS; j++)
-		for (i = 0; i<ROWS; i++)
-			if (arrayAsteroids[i][j].getRadius() > 0) // If asteroid exists.
-				if (checkSpheresIntersection(x - 5 * sin((M_PI / 180.0) * a), 0.0,
-					z - 5 * cos((M_PI / 180.0) * a), 7.072,
-					arrayAsteroids[i][j].getCenterX(), arrayAsteroids[i][j].getCenterY(),
-					arrayAsteroids[i][j].getCenterZ(), arrayAsteroids[i][j].getRadius()))
-					return 1;
-	return 0;
+	glutTimerFunc(0, update, 0); // Initial call of update().
 }
 
 // Drawing routine.
 void drawScene(void)
 {
-//    frameCount++; // Increment number of frames every redraw.
-   
-//    int i, j;
-	// glColor3f(1, 1, 1);
 
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   renderer->render();
-   fixedR->render();
+	spacecraftRenderer->render();
+	fixedR->render();
 
-//    // Beg	in left viewport.
-//    glViewport(0, 0, width / 2.0, height);//demo
-//    glLoadIdentity();
-
-//    // Write text in isolated (i.e., before gluLookAt) translate block.
-//    glPushMatrix();
-//    glColor3f(1.0, 0.0, 0.0);
-//    glRasterPos3f(-28.0, 25.0, -30.0);
-//    if (isCollision) writeBitmapString((void*)font, "Cannot - will crash!");
-//    glPopMatrix();
-
-//    // Fixed camera.
-//    gluLookAt(0.0, 10.0, 20.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-
-//    // Draw all the asteroids in arrayAsteroids.
-//    for (j = 0; j<COLUMNS; j++)
-//       for (i = 0; i<ROWS; i++)
-//          arrayAsteroids[i][j].draw();
-
-// 	// Draw spacecraft.
-// 	glPushMatrix();
-// 	glTranslatef(xVal, 0.0, zVal);
-// 	glRotatef(angle, 0.0, 1.0, 0.0);
-// 	glCallList(spacecraft);
-// 	glPopMatrix();
-// 	// End left viewport.
-
-// 	// Begin right viewport.
-// 	glViewport(width / 2.0, 0, width / 2.0, height);
-// 	glLoadIdentity();
-
-// 	// Write text in isolated (i.e., before gluLookAt) translate block.
-// 	glPushMatrix();
-// 	glColor3f(1.0, 0.0, 0.0);
-// 	glRasterPos3f(-28.0, 25.0, -30.0);
-// 	if (isCollision) writeBitmapString((void*)font, "Cannot - will crash!");
-// 	glPopMatrix();
-
-// 	// Draw a vertical line on the left of the viewport to separate the two viewports
-// 	glColor3f(1.0, 1.0, 1.0);
-// 	glLineWidth(2.0);
-// 	glBegin(GL_LINES);
-// 	glVertex3f(-5.0, -5.0, -5.0);
-// 	glVertex3f(-5.0, 5.0, -5.0);
-// 	glEnd();
-// 	glLineWidth(1.0);
-
-// 	// Locate the camera at the tip of the cone and pointing in the direction of the cone.
-// 	gluLookAt(xVal - 10 * sin((M_PI / 180.0) * angle),
-// 		0.0,
-// 		zVal - 10 * cos((M_PI / 180.0) * angle),
-// 		xVal - 11 * sin((M_PI / 180.0) * angle),
-// 		0.0,
-// 		zVal - 11 * cos((M_PI / 180.0) * angle),
-// 		0.0,
-// 		1.0,
-// 		0.0);
-
-// 	// Draw all the asteroids in arrayAsteroids.
-// 	for (j = 0; j<COLUMNS; j++)
-// 		for (i = 0; i<ROWS; i++)
-// 			arrayAsteroids[i][j].draw();
-// 	// End right viewport.
-
-	glutSwapBuffers();
+  	glutSwapBuffers();
 }
 
 // OpenGL window reshape routine.
 void resize(int w, int h)
 {
-	// glViewport(0, 0, w, h);
-	// glMatrixMode(GL_PROJECTION);
-	// glLoadIdentity();
-	// glFrustum(-20.0, 20.0, -20.0, 20.0, 5.0, 1250.0);
-	// // glOrtho(-100, 100, -100, 100, -100, 100);
-	// glMatrixMode(GL_MODELVIEW);
-	viewport->update(0, 0, w, h);
+	spacecraftViewPort->update(0, 0, w, h);
 	fixedV->update(2*w / 3, 0, w / 3, h / 3);
 
 	// Pass the size of the OpenGL window.
@@ -380,38 +131,18 @@ void keyInput(unsigned char key, int x, int y)
 // Callback routine for non-ASCII key entry.
 void specialKeyInput(int key, int x, int y)
 {
-	float tempxVal = xVal, tempzVal = zVal, tempAngle = angle;
 
 	// Compute next position.
-	if (key == GLUT_KEY_LEFT) /*tempAngle = angle + 5.0;*/ ss.steerLeft();
-	if (key == GLUT_KEY_RIGHT) /*tempAngle = angle - 5.0;*/ ss.steerRight();
+	if (key == GLUT_KEY_LEFT) 	ss.steerLeft();
+	if (key == GLUT_KEY_RIGHT)	ss.steerRight();
 	if (key == GLUT_KEY_UP)
 	{
-		// tempxVal = xVal - sin(angle * M_PI / 180.0);
-		// tempzVal = zVal - cos(angle * M_PI / 180.0);
 		ss.throttle();
 	}
 	if (key == GLUT_KEY_DOWN)
 	{
-		// tempxVal = xVal + sin(angle * M_PI / 180.0);
-		// tempzVal = zVal + cos(angle * M_PI / 180.0);
 		ss.reverse();
 	}
-
-	// Angle correction.
-	if (tempAngle > 360.0) tempAngle -= 360.0;
-	if (tempAngle < 0.0) tempAngle += 360.0;
-
-	// Move spacecraft to next position only if there will not be collision with an asteroid.
-	if (!asteroidCraftCollision(tempxVal, tempzVal, tempAngle))
-	{
-		isCollision = 0;
-		xVal = tempxVal;
-		zVal = tempzVal;
-		angle = tempAngle;
-	}
-	else isCollision = 1;
-
 	glutPostRedisplay();
 }
 
@@ -435,7 +166,7 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(800, 800);
 	glutInitWindowPosition(100, 100);
-	glutCreateWindow("spaceTravel.cpp");
+	glutCreateWindow("Solar System.cpp");
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(resize);
 	glutKeyboardFunc(keyInput);
@@ -447,6 +178,6 @@ int main(int argc, char **argv)
 	setup();
 
 	glutMainLoop();
-	renderer->~Renderer();
+	spacecraftRenderer->~Renderer();
 	fixedCamera->~Director();
 }

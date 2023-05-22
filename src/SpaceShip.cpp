@@ -25,7 +25,7 @@ void SpaceShip::update(){
 void SpaceShip::pointCamera(){
     glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glFrustum(-20.0, 20.0, -20.0, 20.0, 5.0, 500.0);
+	glFrustum(-20.0, 20.0, -20.0, 20.0, 5.0, 600.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

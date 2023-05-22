@@ -11,6 +11,10 @@ ViewPort::ViewPort(float xvmin, float yvmin, float width, float height, Director
 
 void ViewPort::view(){
     glViewport(xvmin, yvmin, width, height);
+    // glScissor(xvmin, yvmin, width, height);
+    // glEnable(GL_SCISSOR_TEST);
+    // // glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
     director->pointCamera();
     
 }
