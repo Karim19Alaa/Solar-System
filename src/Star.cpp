@@ -15,6 +15,7 @@ Star::Star(GLenum lightID, float radius, float spinVelocity, float axisAngle, fl
 
 
 }
+
 void Star::draw()
 {
     glEnable(lightID);
